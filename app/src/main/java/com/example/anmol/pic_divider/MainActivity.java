@@ -1,16 +1,21 @@
 package com.example.anmol.pic_divider;
 
+import android.graphics.Color;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.daprlabs.cardstack.SwipeDeck;
 import com.example.anmol.pic_divider.adapter.SwipeDeckAdapter;
+import com.github.johnpersano.supertoasts.library.Style;
+import com.github.johnpersano.supertoasts.library.SuperActivityToast;
+import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,7 +62,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void cardsDepleted() {
-                //Again Starting the loop
+
+                SuperActivityToast.create(MainActivity.this,new Style(),Style.TYPE_PROGRESS_BAR).setProgressBarColor(Color.WHITE)
+                        .setText("Folder  :  " + fileNameKeys.get(loop)).setDuration(Style.DURATION_SHORT).setFrame(Style.FRAME_LOLLIPOP)
+                        .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_DEEP_ORANGE)).setAnimations(Style.ANIMATIONS_FLY).show();
+
                 loop();
             }
             @Override

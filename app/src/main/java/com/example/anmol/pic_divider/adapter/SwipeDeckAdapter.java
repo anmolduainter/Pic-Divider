@@ -1,6 +1,7 @@
 package com.example.anmol.pic_divider.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.anmol.pic_divider.R;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.List;
 
 public class SwipeDeckAdapter extends BaseAdapter {
@@ -48,7 +51,8 @@ public class SwipeDeckAdapter extends BaseAdapter {
         }
 
         // Showing Images Here
-        Glide.with(ctx).load(li.get(i)).into((ImageView) v.findViewById(R.id.SdCardImages));
+        Uri uri = Uri.fromFile(new File(li.get(i)));
+        Picasso.with(ctx).load(uri).fit().into((ImageView) v.findViewById(R.id.SdCardImages));
 
         return v;
     }
