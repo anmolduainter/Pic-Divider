@@ -1,9 +1,14 @@
 package com.example.anmol.pic_divider;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.daprlabs.cardstack.SwipeDeck;
@@ -15,7 +20,9 @@ import com.github.johnpersano.supertoasts.library.utils.PaletteUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
+
+import static com.example.anmol.pic_divider.R.id.button;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -152,5 +159,69 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.Done :
+
+                dialog();
+
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+        return true;
+    }
+
+
+    public void dialog(){
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Delete DisLikeItems Permenantly ?");
+        //ans is yes then delete dislikes one till now
+        alertDialogBuilder.setPositiveButton("yes",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+
+                                //Deleting all dislike Images
+
+                                for (int i=0;i<listDislike.size();i++){
+
+                                    //getting file
+                                    File file=new File(listDislike.get(i));
+
+                                    //deleting file if exists
+                                    if (file.exists()){
+                                        file.delete();
+                                    }
+
+                                }
+
+                                SuperActivityToast.create(MainActivity.this).setText("Successfully Deleted").setColor(Color.BLUE).setDuration(Style.DURATION_LONG).show();
+
+                            }
+                        });
+
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Dont do anything as the ans. is no
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+    }
 
 }
