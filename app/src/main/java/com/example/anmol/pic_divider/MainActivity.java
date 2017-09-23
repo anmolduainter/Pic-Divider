@@ -9,14 +9,20 @@ import com.example.anmol.pic_divider.adapter.SwipeDeckAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private SwipeDeck cardStack;
-    private ArrayList<File> imageFiles;
-    private ArrayList<String> images;
     private ArrayList<String> listLike;
     private ArrayList<String> listDislike;
+
+
+    private static int loop=0;
+    //Taking this to have loop
+    private HashMap<String,ArrayList<String>> hashMap;
+    ArrayList<String> fileNameKeys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,47 +32,33 @@ public class MainActivity extends AppCompatActivity {
         cardStack= (SwipeDeck) findViewById(R.id.swipe_deck);
         listLike=new ArrayList<>();
         listDislike=new ArrayList<>();
-        ArrayList<String> images=new ArrayList<>();
+        hashMap=new HashMap<String,ArrayList<String>>();
+        fileNameKeys=new ArrayList<>();
 
-        //getting all images path
-        imageFiles=getFilePaths(Environment.getExternalStorageDirectory());
+        //Getting All File Paths
+        getFilePaths(Environment.getExternalStorageDirectory());
 
-        for (int i=0;i<imageFiles.size();i++){
-            images.add(imageFiles.get(i).getAbsolutePath());
-        }
+        loop();
 
-        //printing images
-        System.out.println(images);
-
-        //size of images
-        System.out.println(images.size());
-
-
-        //Setting Adapter
-        SwipeDeckAdapter swipeDeckAdapter=new SwipeDeckAdapter(images,MainActivity.this);
-
-        cardStack.setAdapter(swipeDeckAdapter);
+        System.out.println("Loop Called : "+loop);
 
         //setting Events Callback
 
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
             @Override
             public void cardSwipedLeft(int position) {
-
              dislikePhotos(position);
-
             }
 
             @Override
             public void cardSwipedRight(int position) {
-
                 LikePhotos(position);
-
             }
 
             @Override
             public void cardsDepleted() {
-
+                //Again Starting the loop
+                loop();
             }
             @Override
             public void cardActionDown() {
@@ -84,28 +76,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //loop
+    public void loop(){
+        System.out.println("Value of loop : " + loop);
+
+        while(loop<fileNameKeys.size()){
+            //checking if list corresponding to a key is empty or not
+            if (hashMap.get(fileNameKeys.get(loop)).isEmpty()){
+                loop+=1;
+                continue;
+            }
+            else{
+                System.out.println("Value of  i : "+loop);
+                System.out.println(loop+" -> " + fileNameKeys.get(loop));
+                SwipeDeckAdapter swipeDeckAdapter=new SwipeDeckAdapter(hashMap.get(fileNameKeys.get(loop)),MainActivity.this);
+                cardStack.setAdapter(swipeDeckAdapter);
+                loop+=1;
+                break;
+            }
+        }
+    }
+
     //Dislike Photos
     public void dislikePhotos(int pos){
-        listDislike.add(images.get(pos));
+        listDislike.add(hashMap.get(fileNameKeys.get(loop-1)).get(pos));
         System.out.println(listDislike);
     }
 
     //Like Photos
     public void LikePhotos(int pos){
-        listLike.add(images.get(pos));
-        System.out.println(listLike);
+        System.out.println("Loop Inside Like function : "+loop);
+        listLike.add(hashMap.get(fileNameKeys.get(loop-1)).get(pos));
+        System.out.println("Size: " + listLike.size());
     }
 
     // Method to get All Images Path
-    public ArrayList<File> getFilePaths(File root){
+    public ArrayList<String> getFilePaths(File root){
 
-        ArrayList<File> arrayfiles=new ArrayList<>();
+        ArrayList<String> arrayfiles=new ArrayList<>();
         File[] files=root.listFiles();
 
         for (File f:files){
 
             if (f.isDirectory() && !f.isHidden()){
-                arrayfiles.addAll(getFilePaths(f));
+                fileNameKeys.add(f.getName());
+                hashMap.put(f.getName(),getFilePaths(f));
             }
 
             else{
@@ -117,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                         || f.getName().contains(".bmp") || f.getName().contains(".BMP")){
 
 
-                    arrayfiles.add(f);
+                    arrayfiles.add(f.getAbsolutePath());
 
                 }
             }
